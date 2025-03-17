@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Frequency - Xingyu Yang</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="profile">
+                <img src="yxy.png" alt="Profile Picture" class="profile-img">
+                <div class="profile-text">
+                    <h1>Xingyu Yang</h1>
+                    <p class="title">just a student</p>
+                    <p class="institution">Beijing Language and Culture University</p>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> soft2yang@outlook.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Beijing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="javascript:void(0)">Home</a></li>
+                <li><a href="javascript:void(0)">About</a></li>
+                <li><a href="javascript:void(0)">Research</a></li>
+                <li><a href="tools.html">Tools</a></li>
+                <li><a href="javascript:void(0)">Publications</a></li>
+                <li><a href="javascript:void(0)">CV</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container page-container">
+        <div class="page-content">
+            <h2>Word Frequency Tool</h2>
+            
+            <div class="tool-item">
+                <h3>词频查找 (Word Frequency)</h3>
+                <p class="tool-description">
+                    此工具用于查找词语在SUBTLEX-CH语料库中的词频信息。输入要查找的词（用逗号分隔），将显示每个词的词频、拼音和词性信息。
+                </p>
+                
+                <div id="frequencyLoadingIndicator" class="loading-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>正在加载词频数据，请稍候...</p>
+                </div>
+                
+                <div id="frequencyInterface" class="tool-interface">
+                    <div class="input-group">
+                        <label for="frequencyWords">要查找的词 (用逗号分隔):</label>
+                        <textarea id="frequencyWords" rows="3" placeholder="例如: 你好, 世界, 中国"></textarea>
+                    </div>
+                    
+                    <button id="findFrequencyBtn" class="btn">查找词频</button>
+                    
+                    <div id="frequencyLoadingIndicator" class="loading-indicator" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>查找中...</p>
+                    </div>
+                    
+                    <div id="frequencyResults" class="results-container" style="display: none;">
+                        <h4>结果:</h4>
+                        <table id="frequencyResultsTable" class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>词</th>
+                                    <th>长度</th>
+                                    <th>拼音</th>
+                                    <th>拼音输入</th>
+                                    <th>词频</th>
+                                    <th>百万词频</th>
+                                    <th>log10词频</th>
+                                    <th>CD词频</th>
+                                    <th>CD百分比</th>
+                                    <th>log10CD</th>
+                                    <th>主要词性</th>
+                                    <th>主要词性频次</th>
+                                    <th>所有词性</th>
+                                    <th>所有词性频次</th>
+                                    <th>英文翻译</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 结果将插入到这里 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="frequencyError" class="error-message" style="display: none;">
+                    <p><i class="fas fa-exclamation-triangle"></i> 加载词频数据时出错。请刷新页面重试。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page-sidebar">
+            <div class="sidebar-card">
+                <h3>Available Tools</h3>
+                <ul class="sidebar-links">
+                    <li><a href="tools.html">Semantic Projection</a></li>
+                    <li><a href="#" class="active">Word Frequency</a></li>
+                    <li><a href="muse-eeg.html">Muse EEG</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3>Tool Documentation</h3>
+                <p>
+                    此工具基于SUBTLEX-CH语料库，提供中文词语的词频、拼音和词性信息。
+                    数据来源于SUBTLEX-CH项目，该语料库包含了大量中文影视剧字幕中的词频统计信息。
+                </p>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3>Connect</h3>
+                <div class="social-links-compact">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fas fa-book"></i></a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p style="font-size: 1.5em; font-weight: bold; font-style: italic;">Sapere Aude</p>
+            <p>Dare to know</p>
+        </div>
+    </footer>
+
+    <script src="tools/wordfrequency/word-frequency.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const frequencyLoadingIndicator = document.getElementById('frequencyLoadingIndicator');
+            const frequencyInterface = document.getElementById('frequencyInterface');
+            const frequencyError = document.getElementById('frequencyError');
+            const findFrequencyBtn = document.getElementById('findFrequencyBtn');
+            const frequencyResults = document.getElementById('frequencyResults');
+            const frequencyResultsTable = document.getElementById('frequencyResultsTable').getElementsByTagName('tbody')[0];
+            
+            findFrequencyBtn.addEventListener('click', async function() {
+                // 获取输入值，同时支持中文逗号和英文逗号
+                const words = document.getElementById('frequencyWords').value.split(/[,，]/).map(word => word.trim()).filter(word => word);
+                
+                // 验证输入
+                if (words.length === 0) {
+                    alert('请输入要查找的词');
+                    return;
+                }
+                
+                // 显示加载指示器
+                frequencyLoadingIndicator.style.display = 'flex';
+                frequencyResults.style.display = 'none';
+                
+                try {
+                    // 查找词频
+                    const results = await findWordFrequency(words);
+                    
+                    // 隐藏加载指示器
+                    frequencyLoadingIndicator.style.display = 'none';
+                    
+                    // 清除之前的结果
+                    frequencyResultsTable.innerHTML = '';
+                    
+                    // 显示结果
+                    results.forEach(result => {
+                        const row = frequencyResultsTable.insertRow();
+                        const wordCell = row.insertCell(0);
+                        const lengthCell = row.insertCell(1);
+                        const pinyinCell = row.insertCell(2);
+                        const pinyinInputCell = row.insertCell(3);
+                        const frequencyCell = row.insertCell(4);
+                        const millionFrequencyCell = row.insertCell(5);
+                        const log10FrequencyCell = row.insertCell(6);
+                        const cdFrequencyCell = row.insertCell(7);
+                        const cdPercentageCell = row.insertCell(8);
+                        const log10CdCell = row.insertCell(9);
+                        const mainPosCell = row.insertCell(10);
+                        const mainPosFrequencyCell = row.insertCell(11);
+                        const allPosCell = row.insertCell(12);
+                        const allPosFrequencyCell = row.insertCell(13);
+                        const englishTranslationCell = row.insertCell(14);
+                        
+                        wordCell.textContent = result.word;
+                        lengthCell.textContent = result.length;
+                        pinyinCell.textContent = result.pinyin;
+                        pinyinInputCell.textContent = result.pinyinInput;
+                        frequencyCell.textContent = result.frequency;
+                        millionFrequencyCell.textContent = result.millionFrequency;
+                        log10FrequencyCell.textContent = result.log10Frequency;
+                        cdFrequencyCell.textContent = result.cdFrequency;
+                        cdPercentageCell.textContent = result.cdPercentage;
+                        log10CdCell.textContent = result.log10Cd;
+                        mainPosCell.textContent = result.mainPos;
+                        mainPosFrequencyCell.textContent = result.mainPosFrequency;
+                        allPosCell.textContent = result.allPos;
+                        allPosFrequencyCell.textContent = result.allPosFrequency;
+                        englishTranslationCell.textContent = result.englishTranslation;
+                    });
+                    
+                    // 显示结果容器
+                    frequencyResults.style.display = 'block';
+                } catch (error) {
+                    frequencyLoadingIndicator.style.display = 'none';
+                    frequencyError.style.display = 'block';
+                    alert('查找词频时出错: ' + error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
