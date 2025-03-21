@@ -209,11 +209,11 @@ async function calculateSemanticProjection(largerWords, smallerWords, targetWord
     }
     
     try {
-        // 按照Python代码的逻辑计算语义维度向量
+        // 计算语义维度向量
         const averageVector = calculateSemanticDimension(largerWords, smallerWords);
         
-        // 计算尺度向量的模的平方
-        const sizeNorm = magnitudeSquared(averageVector);
+        // 计算语义维度向量的模长（用于标准化）
+        const sizeMagnitude = magnitude(averageVector);
         
         // 计算目标词的投影
         const results = [];
@@ -222,14 +222,10 @@ async function calculateSemanticProjection(largerWords, smallerWords, targetWord
             if (wordEmbeddings[word]) {
                 const vector = wordEmbeddings[word];
                 
-                // 计算点积 (与Python代码中的size_magnitude相同)
-                const sizeMagnitude = dotProduct(averageVector, vector);
+                // 计算标准化后的投影值（点积除以模长）
+                const projectionValue = dotProduct(averageVector, vector) / sizeMagnitude;
                 
-                // 计算投影向量 (与Python代码中的projection_vector相同)
-                // const projectionVector = averageVector.map(value => (sizeMagnitude / sizeNorm) * value);
-                
-                // 我们只需要返回点积值，与Python代码输出一致
-                results.push({ word, value: sizeMagnitude });
+                results.push({ word, value: projectionValue });
             } else {
                 results.push({ word, value: NaN });
             }
